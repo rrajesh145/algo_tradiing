@@ -2,6 +2,6 @@
   "port": 8080,
   "enableSSL": false,
   "sslPort": 8443,
-  "deployDir": "G:/Algo Trading/python/git/algo_tradiing/temp/python-deploy",
-  "logFileDir": "G:/Algo Trading/python/git/algo_tradiing/temp/python-deploy/logs"
+  "deployDir": "G:/Algo Trading/python/git/python-deploy",
+  "logFileDir": "G:/Algo Trading/python/git/python-deploy/logs"
 }

@@ -25,9 +25,10 @@ class BaseStrategy:
     self.maxTradesPerDay = 1 # Max number of trades per day under this strategy
     self.isFnO = False # Does this strategy trade in FnO or not
     self.capitalPerSet = 0 # Applicable if isFnO is True (Set means 1CE/1PE or 2CE/2PE etc based on your strategy logic)
-    self.tradesCreatedSymbols = [] # Add symbol to this list when a trade is created
     # Register strategy with trade manager
     TradeManager.registerStrategy(self)
+    # Load all trades of this strategy into self.trades on restart of app
+    self.trades = TradeManager.getAllTradesByStrategy(self.name)
 
   def getName(self):
     return self.name
@@ -77,9 +78,10 @@ class BaseStrategy:
       return
 
     if now < self.startTimestamp:
-      waitSeconds = now - self.startTimestamp
+      waitSeconds = Utils.getEpoch(self.startTimestamp) - Utils.getEpoch(now)
       logging.info("%s: Waiting for %d seconds till startegy start timestamp reaches...", self.getName(), waitSeconds)
-      time.sleep(waitSeconds)      
+      if waitSeconds > 0:
+        time.sleep(waitSeconds)      
 
     # Run in an loop and keep processing
     while True:
@@ -115,5 +117,12 @@ class BaseStrategy:
 
     return True
 
+  def addTradeToList(self, trade):
+    if trade != None:
+      self.trades.append(trade)
+
   def getQuote(self, tradingSymbol):
     return Quotes.getQuote(tradingSymbol, self.isFnO)
+
+  def getTrailingSL(self, trade):
+    return 0

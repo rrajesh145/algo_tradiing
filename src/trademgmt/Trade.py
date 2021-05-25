@@ -20,6 +20,7 @@ class Trade:
     self.intradaySquareOffTimestamp = None # Can be strategy specific. Some can square off at 15:00:00 some can at 15:15:00 etc.
     self.requestedEntry = 0 # Requested entry
     self.entry = 0 # Actual entry. This will be different from requestedEntry if the order placed is Market order
+    self.slPercentage=0 #Stoploss percentage that to be set for each strategy 
     self.qty = 0 # Requested quantity
     self.filledQty = 0 # In case partial fill qty is not equal to filled quantity
     self.initialStopLoss = 0 # Initial stop loss
