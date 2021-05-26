@@ -16,6 +16,11 @@ def getBrokerAppConfig():
     jsonUserData = json.load(brokerapp)
     return jsonUserData
 
+def getTelegramAppConfig():
+  with open('../config/telegram.json', 'r') as telegramapp:
+    jsonUserData = json.load(telegramapp)
+    return jsonUserData
+
 def getHolidays():
   with open('../config/holidays.json', 'r') as holidays:
     holidaysData = json.load(holidays)

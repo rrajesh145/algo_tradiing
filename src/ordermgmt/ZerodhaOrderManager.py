@@ -15,7 +15,9 @@ class ZerodhaOrderManager(BaseOrderManager):
     super().__init__("zerodha")
 
   def placeOrder(self, orderInputParams):
-    logging.info('%s: Going to place order with params %s', self.broker, orderInputParams)
+    message="{0}: Going to place order with params {1}".format(self.broker,orderInputParams)
+    Utils.sendMessageTelegramBot(message)
+    logging.info(message)
     kite = self.brokerHandle
     try:
       orderId = kite.place_order(
@@ -28,8 +30,10 @@ class ZerodhaOrderManager(BaseOrderManager):
         trigger_price=orderInputParams.triggerPrice,
         product=self.convertToBrokerProductType(orderInputParams.productType),
         order_type=self.convertToBrokerOrderType(orderInputParams.orderType))
-
-      logging.info('%s: Order placed successfully, orderId = %s', self.broker, orderId)
+    
+      message="{0}: Order placed successfully, orderId {1}".format(self.broker,orderId)
+      Utils.sendMessageTelegramBot(message)
+      logging.info(message)
       order = Order(orderInputParams)
       order.orderId = orderId
       order.orderPlaceTimestamp = Utils.getEpoch()

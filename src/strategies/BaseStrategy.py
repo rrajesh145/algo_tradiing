@@ -66,7 +66,9 @@ class BaseStrategy:
       return
 
     if Utils.isMarketClosedForTheDay():
-      logging.warn("%s: Not going to run strategy as market is closed.", self.getName())
+      message="{}: Not going to run strategy as market is closed.".format(self.getName())
+      Utils.sendMessageTelegramBot(message)
+      logging.warn(message)
       return
 
     now = datetime.now()
@@ -79,7 +81,9 @@ class BaseStrategy:
 
     if now < self.startTimestamp:
       waitSeconds = Utils.getEpoch(self.startTimestamp) - Utils.getEpoch(now)
-      logging.info("%s: Waiting for %d seconds till startegy start timestamp reaches...", self.getName(), waitSeconds)
+      message="{0} Waiting for {1} seconds till startegy start timestamp reaches...".format(self.getName(),waitSeconds)
+      Utils.sendMessageTelegramBot(message)
+      logging.info(message)
       if waitSeconds > 0:
         time.sleep(waitSeconds)      
 

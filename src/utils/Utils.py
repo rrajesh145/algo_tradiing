@@ -3,9 +3,11 @@ import uuid
 import time
 import logging
 import calendar
+import requests
 from datetime import datetime, timedelta
 
 from config.Config import getHolidays
+from config.Config import getTelegramAppConfig
 from models.Direction import Direction
 from trademgmt.TradeState import TradeState
 
@@ -234,3 +236,13 @@ class Utils:
       return inputPrice - remainder
     else:
       return inputPrice + (nearestMultiple - remainder)
+  
+  @staticmethod
+  def sendMessageTelegramBot(message):
+    telegramAppConfig = getTelegramAppConfig()
+    urlReq="https://api.telegram.org/bot"+telegramAppConfig['bot_token']+"/sendMessage"+"?chat_id="+telegramAppConfig['bot_chat_id']+"&text="+message
+    results= requests.get(urlReq)
+    print(results.json())
+    return results.json()
+
+

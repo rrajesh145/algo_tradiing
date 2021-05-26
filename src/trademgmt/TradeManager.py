@@ -384,7 +384,10 @@ class TradeManager:
     except Exception as e:
       logging.error('TradeManager: Failed to place SL order for tradeID %s: Error => %s', trade.tradeID, str(e))
       return False
-    logging.info('TradeManager: Successfully placed SL order %s for tradeID %s', trade.slOrder.orderId, trade.tradeID)
+    
+    message="TradeManager: Successfully placed SL order {0} for tradeID {1}".format(trade.slOrder.orderId, trade.tradeID)
+    Utils.sendMessageTelegramBot(message)
+    logging.info(message)
     return True
 
   @staticmethod
