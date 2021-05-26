@@ -27,6 +27,9 @@ class Trade:
     self.stopLoss = 0 # This is the current stop loss. In case of trailing SL the current stopLoss and initialStopLoss will be different after some time
     self.target = 0 # Target price if applicable
     self.cmp = 0 # Last traded price
+    
+    self.moveToCost = False # This need to be set true for enabling move to cost price
+    self.counterPosition= None # This need to be set with counter position if move to cost price is set with True. when one leg hits with SL counter position that to be set for cost price
 
     self.tradeState = TradeState.CREATED # state of the trade
     self.timestamp = None # Set this timestamp to strategy timestamp if you are not sure what to set

@@ -145,7 +145,7 @@ class TradeManager:
 
   @staticmethod
   def tickerListener(tick):
-    # logging.info('tickerLister: new tick received for %s = %f', tick.tradingSymbol, tick.lastTradedPrice);
+    #logging.info('tickerLister: new tick received for %s = %f', tick.tradingSymbol, tick.lastTradedPrice)
     TradeManager.symbolToCMPMap[tick.tradingSymbol] = tick.lastTradedPrice # Store the latest tick in map
     # On each new tick, get a created trade and call its strategy whether to place trade or not
     for strategy in TradeManager.strategyToInstanceMap:
@@ -233,6 +233,7 @@ class TradeManager:
         TradeManager.trackEntryOrder(trade)
         TradeManager.trackSLOrder(trade)
         TradeManager.trackTargetOrder(trade)
+        
         if trade.intradaySquareOffTimestamp != None:
           nowEpoch = Utils.getEpoch()
           if nowEpoch >= trade.intradaySquareOffTimestamp:
@@ -273,6 +274,7 @@ class TradeManager:
         TradeManager.setTradeToCompleted(trade, exit, exitReason)
         # Make sure to cancel target order if exists
         TradeManager.cancelTargetOrder(trade)
+        TradeManager.checkAndUpdateMoveToCost(trade)
 
       elif trade.slOrder.orderStatus == OrderStatus.CANCELLED:
         # SL order cancelled outside of algo (manually or by broker or by exchange)
@@ -281,7 +283,7 @@ class TradeManager:
         TradeManager.setTradeToCompleted(trade, exit, TradeExitReason.SL_CANCELLED)
         # Cancel target order if exists
         TradeManager.cancelTargetOrder(trade)
-
+      
       else:
         TradeManager.checkAndUpdateTrailSL(trade)
 
@@ -309,6 +311,38 @@ class TradeManager:
         trade.stopLoss = newTrailSL # IMPORTANT: Dont forget to update this on successful modification
       except Exception as e:
         logging.error('TradeManager: Failed to modify SL order for tradeID %s orderId %s: Error => %s', trade.tradeID, trade.slOrder.orderId, str(e))
+  @staticmethod
+  def checkAndUpdateMoveToCost(trade):
+    # Move to cost price if applicable for the trade
+    strategyInstance = TradeManager.strategyToInstanceMap[trade.strategy]
+    if strategyInstance == None:
+      return
+    if trade.moveToCost == False:
+      return
+    
+    # Getting counter trade and moving its SL order to cost price
+    for availableTrades in TradeManager.trades:
+      if availableTrades.tradingSymbol == trade.counterPosition and availableTrades.tradeState == TradeState.ACTIVE:
+        counterTrade=availableTrades
+
+    if counterTrade.entry > 0:
+      if counterTrade.direction == Direction.LONG and counterTrade.entry > counterTrade.stopLoss:
+        updateSL = True
+      elif counterTrade.direction == Direction.SHORT and counterTrade.entry < counterTrade.stopLoss:
+        updateSL = True
+    if updateSL == True:
+      omp = OrderModifyParams()
+      omp.newTriggerPrice = counterTrade.entry
+      try:
+        TradeManager.getOrderManager().modifyOrder(counterTrade.slOrder, omp)
+        logging.info('TradeManager: Trail SL: Successfully modified stopLoss from %f to %f for tradeID %s', counterTrade.stopLoss, omp.newTriggerPrice, counterTrade.tradeID)
+        counterTrade.stopLoss = counterTrade.entry # IMPORTANT: Dont forget to update this on successful modification
+
+      except Exception as e:
+        logging.error('TradeManager: Failed to modify SL order for tradeID %s orderId %s: Error => %s', trade.tradeID, trade.slOrder.orderId, str(e))
+      
+
+    logging.error('Move to Cost Price is set and counter position is %s',trade.counterPosition)
 
   @staticmethod
   def trackTargetOrder(trade):
@@ -529,3 +563,6 @@ class TradeManager:
   @staticmethod
   def getLastTradedPrice(tradingSymbol):
     return TradeManager.symbolToCMPMap[tradingSymbol]
+  
+      
+

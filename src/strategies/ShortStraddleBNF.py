@@ -31,9 +31,9 @@ class ShortStraddleBNF(BaseStrategy):
     self.symbols = []
     self.slPercentage = 25
     self.targetPercentage = 0
-    self.startTimestamp = Utils.getTimeOfToDay(9, 20, 0) # When to start the strategy. Default is Market start time
+    self.startTimestamp = Utils.getTimeOfToDay(9, 21, 0) # When to start the strategy. Default is Market start time
     self.stopTimestamp = Utils.getTimeOfToDay(14, 0, 0) # This is not square off timestamp. This is the timestamp after which no new trades will be placed under this strategy but existing trades continue to be active.
-    self.squareOffTimestamp = Utils.getTimeOfToDay(14, 30, 0) # Square off time
+    self.squareOffTimestamp = Utils.getTimeOfToDay(15, 12, 0) # Square off time
     self.capital = 100000 # Capital to trade (This is the margin you allocate from your broker account for this strategy)
     self.leverage = 0
     self.maxTradesPerDay = 2 # (1 CE + 1 PE) Max number of trades per day under this strategy
@@ -75,11 +75,11 @@ class ShortStraddleBNF(BaseStrategy):
       logging.error('%s: Could not get quotes for option symbols', self.getName())
       return
 
-    self.generateTrade(ATMCESymbol, numLots, quoteATMCESymbol.lastTradedPrice)
-    self.generateTrade(ATMPESymbol, numLots, quoteATMPESymbol.lastTradedPrice)
+    self.generateTrade(ATMCESymbol, numLots, quoteATMCESymbol.lastTradedPrice,ATMPESymbol)
+    self.generateTrade(ATMPESymbol, numLots, quoteATMPESymbol.lastTradedPrice,ATMCESymbol)
     logging.info('%s: Trades generated.', self.getName())
 
-  def generateTrade(self, optionSymbol, numLots, lastTradedPrice):
+  def generateTrade(self, optionSymbol, numLots, lastTradedPrice,counterPosition):
     trade = Trade(optionSymbol)
     trade.strategy = self.getName()
     trade.isOptions = True
@@ -89,6 +89,8 @@ class ShortStraddleBNF(BaseStrategy):
     trade.requestedEntry = lastTradedPrice
     trade.timestamp = Utils.getEpoch(self.startTimestamp) # setting this to strategy timestamp
     trade.slPercentage = 25
+    trade.moveToCost=True
+    trade.counterPosition=counterPosition
     
     isd = Instruments.getInstrumentDataBySymbol(optionSymbol) # Get instrument data to know qty per lot
     trade.qty = isd['lot_size'] * numLots
@@ -107,4 +109,3 @@ class ShortStraddleBNF(BaseStrategy):
     # We dont have any condition to be checked here for this strategy just return True
     return True
 
- 
