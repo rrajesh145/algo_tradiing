@@ -335,14 +335,12 @@ class TradeManager:
       omp.newTriggerPrice = counterTrade.entry
       try:
         TradeManager.getOrderManager().modifyOrder(counterTrade.slOrder, omp)
-        logging.info('TradeManager: Trail SL: Successfully modified stopLoss from %f to %f for tradeID %s', counterTrade.stopLoss, omp.newTriggerPrice, counterTrade.tradeID)
+        message="TradeManager: Move to Cost: Successfully modified stopLoss from {0} to {1} for tradeID {2}".format(counterTrade.stopLoss, omp.newTriggerPrice, counterTrade.tradeID)
+        Utils.sendMessageTelegramBot(message)
+        logging.info(message)
         counterTrade.stopLoss = counterTrade.entry # IMPORTANT: Dont forget to update this on successful modification
-
       except Exception as e:
         logging.error('TradeManager: Failed to modify SL order for tradeID %s orderId %s: Error => %s', trade.tradeID, trade.slOrder.orderId, str(e))
-      
-
-    logging.error('Move to Cost Price is set and counter position is %s',trade.counterPosition)
 
   @staticmethod
   def trackTargetOrder(trade):

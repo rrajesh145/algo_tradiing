@@ -8,6 +8,7 @@ from strategies.BaseStrategy import BaseStrategy
 from utils.Utils import Utils
 from trademgmt.Trade import Trade
 from trademgmt.TradeManager import TradeManager
+from core.Quotes import Quotes
 
 # Each strategy has to be derived from BaseStrategy
 class ShortStraddleBNF(BaseStrategy):
@@ -32,8 +33,8 @@ class ShortStraddleBNF(BaseStrategy):
     self.slPercentage = 25
     self.targetPercentage = 0
     self.startTimestamp = Utils.getTimeOfToDay(9, 21, 0) # When to start the strategy. Default is Market start time
-    self.stopTimestamp = Utils.getTimeOfToDay(14, 0, 0) # This is not square off timestamp. This is the timestamp after which no new trades will be placed under this strategy but existing trades continue to be active.
-    self.squareOffTimestamp = Utils.getTimeOfToDay(15, 12, 0) # Square off time
+    self.stopTimestamp = Utils.getTimeOfToDay(9, 30, 0) # This is not square off timestamp. This is the timestamp after which no new trades will be placed under this strategy but existing trades continue to be active.
+    self.squareOffTimestamp = Utils.getTimeOfToDay(15, 10, 0) # Square off time
     self.capital = 100000 # Capital to trade (This is the margin you allocate from your broker account for this strategy)
     self.leverage = 0
     self.maxTradesPerDay = 2 # (1 CE + 1 PE) Max number of trades per day under this strategy
@@ -52,14 +53,15 @@ class ShortStraddleBNF(BaseStrategy):
       return
 
     # Get current market price of Nifty Future
-    futureSymbol = Utils.prepareMonthlyExpiryFuturesSymbol('BANKNIFTY')
-    quote = self.getQuote(futureSymbol)
+    #futureSymbol = Utils.prepareMonthlyExpiryFuturesSymbol('BANKNIFTY')
+    futureSymbol='NIFTY BANK'
+    quote = Quotes.getStrikePrice(futureSymbol) 
     if quote == None:
       logging.error('%s: Could not get quote for %s', self.getName(), futureSymbol)
       return
 
-    ATMStrike = Utils.getNearestStrikePrice(quote.lastTradedPrice, 100)
-    logging.info('%s: Nifty CMP = %f, ATMStrike = %d', self.getName(), quote.lastTradedPrice, ATMStrike)
+    ATMStrike = Utils.getNearestStrikePrice(quote, 100)
+    logging.info('%s: %s = %f, ATMStrike = %d', self.getName(),futureSymbol,quote, ATMStrike)
 
     ATMCESymbol = Utils.prepareWeeklyOptionsSymbol("BANKNIFTY", ATMStrike, 'CE')
     ATMPESymbol = Utils.prepareWeeklyOptionsSymbol("BANKNIFTY", ATMStrike, 'PE')
