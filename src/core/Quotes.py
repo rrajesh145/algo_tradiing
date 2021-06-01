@@ -2,6 +2,7 @@ import logging
 
 from core.Controller import Controller
 from models.Quote import Quote
+from models.OptionBuying import OptionBuying
 
 class Quotes:
   @staticmethod
@@ -62,3 +63,20 @@ class Quotes:
       # The logic may be different for other brokers
       quote = None
     return quote
+
+  @staticmethod
+  def getOptionBuyingQuote(tradingSymbol,isFnO):
+    quote = Quotes.getQuote(tradingSymbol,isFnO)
+    if quote:
+      # convert quote to Option buying details
+      optionBuying = OptionBuying(tradingSymbol)
+      optionBuying.lastTradedPrice = quote.lastTradedPrice
+      optionBuying.high = quote.high
+      optionBuying.low = quote.low
+      optionBuying.entryPrice= (quote.low*1.8)
+      optionBuying.stopLoss=(quote.low*1.8)-20
+      optionBuying.target=(quote.low*1.8)+40
+      optionBuying.isTradeLive=False
+    else:
+      optionBuying= None
+    return optionBuying    

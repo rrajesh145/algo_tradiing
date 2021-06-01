@@ -10,6 +10,7 @@ from strategies.SampleStrategy import SampleStrategy
 from strategies.BNFORB30Min import BNFORB30Min
 from strategies.OptionSelling import OptionSelling
 from strategies.ShortStraddleBNF import ShortStraddleBNF
+from strategies.OptionBuyingStrategy import OptionBuyingStrategy
 
 #from Test import Test
 
@@ -37,6 +38,7 @@ class Algo:
     #threading.Thread(target=BNFORB30Min.getInstance().run).start()
     #threading.Thread(target=OptionSelling.getInstance().run).start()
     threading.Thread(target=ShortStraddleBNF.getInstance().run).start()
+    threading.Thread(target=OptionBuyingStrategy.getInstance().run).start()
     #threading.Thread(target=TestStrategy.getInstance().run).start()
     
     Algo.isAlgoRunning = True
