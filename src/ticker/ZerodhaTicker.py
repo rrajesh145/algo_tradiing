@@ -6,6 +6,7 @@ from kiteconnect import KiteTicker
 from ticker.BaseTicker import BaseTicker
 from instruments.Instruments import Instruments
 from models.TickData import TickData
+from utils.Utils import Utils
 
 class ZerodhaTicker(BaseTicker):
   def __init__(self):
@@ -80,12 +81,21 @@ class ZerodhaTicker(BaseTicker):
     self.onNewTicks(ticks)
 
   def on_connect(self, ws, response):
+    message="Ticker service is connected"
+    Utils.sendMessageTelegramBot(message)
+    logging.info(message)
     self.onConnect()
 
   def on_close(self, ws, code, reason):
+    message="ALERT: ticker service is closed : {0}".format(reason)
+    Utils.sendMessageTelegramBot(message)
+    logging.info(message)
     self.onDisconnect(code, reason)
 
   def on_error(self, ws, code, reason):
+    message="ALERT: Error in ticker service : {0}".format(reason)
+    Utils.sendMessageTelegramBot(message)
+    logging.error(message)
     self.onError(code, reason)
 
   def on_reconnect(self, ws, attemptsCount):

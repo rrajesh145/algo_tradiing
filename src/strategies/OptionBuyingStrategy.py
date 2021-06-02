@@ -27,7 +27,7 @@ class OptionBuyingStrategy:
       OptionBuyingStrategy.__instance = self
 
   def run(self):
-    logging.info('Inititated the ticket: Run called')
+    logging.info('Inititated the OptionBuyingStrategy: Run called')
     self.strikeRunner()
 
   @staticmethod
@@ -97,7 +97,7 @@ class OptionBuyingStrategy:
     else:
       while True:
         isDataUpdate=False
-        OptionBuyingStrategy.updatedTrades = []
+        OptionBuyingStrategy.trades = []
         tFile = open(strikesFilepath, 'r')
         tradesData = json.loads(tFile.read())
         for tr in tradesData:
@@ -125,7 +125,7 @@ class OptionBuyingStrategy:
         if(len(OptionBuyingStrategy.trades)!=0 and isDataUpdate):
           #OptionBuyingStrategy.trades=[]
           #OptionBuyingStrategy.trades=Test.updatedTrades
-          OptionBuyingStrategy.wriOptionBuyingStrategyrikesToFile(OptionBuyingStrategy.trades)
+          OptionBuyingStrategy.writeStrikesToFile(OptionBuyingStrategy.trades)
        
         time.sleep(60)
 
