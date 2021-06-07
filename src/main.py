@@ -42,7 +42,7 @@ initLoggingConfg(logFileDir + "/app.log")
 logging.info('serverConfig => %s', serverConfig)
 
 brokerAppConfig = getBrokerAppConfig()
-logging.info('brokerAppConfig => %s', brokerAppConfig)
+#logging.info('brokerAppConfig => %s', brokerAppConfig)
 
 port = serverConfig['port']
 

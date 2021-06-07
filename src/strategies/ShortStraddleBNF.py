@@ -33,8 +33,8 @@ class ShortStraddleBNF(BaseStrategy):
     self.slPercentage = 25
     self.targetPercentage = 0
     self.startTimestamp = Utils.getTimeOfToDay(9, 21, 0) # When to start the strategy. Default is Market start time
-    self.stopTimestamp = Utils.getTimeOfToDay(9, 30, 0) # This is not square off timestamp. This is the timestamp after which no new trades will be placed under this strategy but existing trades continue to be active.
-    self.squareOffTimestamp = Utils.getTimeOfToDay(15, 10, 0) # Square off time
+    self.stopTimestamp = Utils.getTimeOfToDay(13, 30, 0) # This is not square off timestamp. This is the timestamp after which no new trades will be placed under this strategy but existing trades continue to be active.
+    self.squareOffTimestamp = Utils.getTimeOfToDay(15, 12, 0) # Square off time
     self.capital = 100000 # Capital to trade (This is the margin you allocate from your broker account for this strategy)
     self.leverage = 0
     self.maxTradesPerDay = 2 # (1 CE + 1 PE) Max number of trades per day under this strategy

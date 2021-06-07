@@ -94,7 +94,7 @@ class ZerodhaOrderManager(BaseOrderManager):
       raise Exception(str(e))
 
   def fetchAndUpdateAllOrderDetails(self, orders):
-    logging.info('%s Going to fetch order book', self.broker)
+    #logging.info('%s Going to fetch order book', self.broker)
     kite = self.brokerHandle
     orderBook = None
     try:
@@ -113,7 +113,7 @@ class ZerodhaOrderManager(BaseOrderManager):
           break
       
       if foundOrder != None:
-        logging.info('Found order for orderId %s', foundOrder.orderId)
+        #logging.info('Found order for orderId %s', foundOrder.orderId)
         foundOrder.qty = bOrder['quantity']
         foundOrder.filledQty = bOrder['filled_quantity']
         foundOrder.pendingQty = bOrder['pending_quantity']
@@ -124,7 +124,7 @@ class ZerodhaOrderManager(BaseOrderManager):
         foundOrder.price = bOrder['price']
         foundOrder.triggerPrice = bOrder['trigger_price']
         foundOrder.averagePrice = bOrder['average_price']
-        logging.info('%s Updated order %s', self.broker, foundOrder)
+        #logging.info('%s Updated order %s', self.broker, foundOrder)
         numOrdersUpdated += 1
 
     logging.info('%s: %d orders updated with broker order details', self.broker, numOrdersUpdated)

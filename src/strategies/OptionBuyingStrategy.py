@@ -33,16 +33,19 @@ class OptionBuyingStrategy:
   @staticmethod
   def strikeRunner():
      # Get current market price of Nifty Future
-    futureSymbol = Utils.prepareMonthlyExpiryFuturesSymbol('BANKNIFTY')
+    #futureSymbol = Utils.prepareMonthlyExpiryFuturesSymbol('BANKNIFTY')
     strikesFilepath='G:\Algo Trading\python\git\python-deploy\stikes\stikes.json'
    
-    quote = Quotes.getQuote(futureSymbol,True)
+    #quote = Quotes.getQuote(futureSymbol,True)
+
+    futureSymbol='NIFTY BANK'
+    quote = Quotes.getStrikePrice(futureSymbol) 
     if quote == None:
       logging.error('OptionBuyingStrategy: Could not get quote for %s', futureSymbol)
       return
     
-    ATMStrike = Utils.getNearestStrikePrice(quote.lastTradedPrice, 100)
-    logging.info('OptionBuyingStrategy: Bank Nifty CMP = %f, ATMStrike = %d', quote.lastTradedPrice, ATMStrike)
+    ATMStrike = Utils.getNearestStrikePrice(quote, 100)
+    logging.info('OptionBuyingStrategy: Bank Nifty CMP = %f, ATMStrike = %d', quote, ATMStrike)
     
     initialATMStrike=ATMStrike+100
     OptionBuyingStrategy.trades = []

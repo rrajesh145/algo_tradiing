@@ -239,10 +239,12 @@ class Utils:
   
   @staticmethod
   def sendMessageTelegramBot(message):
-    telegramAppConfig = getTelegramAppConfig()
-    urlReq="https://api.telegram.org/bot"+telegramAppConfig['bot_token']+"/sendMessage"+"?chat_id="+telegramAppConfig['bot_chat_id']+"&text="+message
-    results= requests.get(urlReq)
-    print(results.json())
-    return results.json()
+    try:
+      telegramAppConfig = getTelegramAppConfig()
+      urlReq="https://api.telegram.org/bot"+telegramAppConfig['bot_token']+"/sendMessage"+"?chat_id="+telegramAppConfig['bot_chat_id']+"&text="+message
+      results= requests.get(urlReq)
+    except Exception as e:
+      logging.info('Exception occured in telegram call : %s', str(e))
+    
 
 

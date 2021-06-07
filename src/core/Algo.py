@@ -38,7 +38,7 @@ class Algo:
     #threading.Thread(target=BNFORB30Min.getInstance().run).start()
     #threading.Thread(target=OptionSelling.getInstance().run).start()
     threading.Thread(target=ShortStraddleBNF.getInstance().run).start()
-    threading.Thread(target=OptionBuyingStrategy.getInstance().run).start()
+    #threading.Thread(target=OptionBuyingStrategy.getInstance().run).start()
     #threading.Thread(target=TestStrategy.getInstance().run).start()
     
     Algo.isAlgoRunning = True
