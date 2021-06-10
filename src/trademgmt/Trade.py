@@ -44,6 +44,7 @@ class Trade:
     self.entryOrder = None # Object of Type ordermgmt.Order
     self.slOrder = None # Object of Type ordermgmt.Order
     self.targetOrder = None # Object of Type ordermgmt.Order
+    self.emergencyExitOrder = None # Object of Type ordermgmt.Order
 
   def equals(self, trade): # compares to trade objects and returns True if equals
     if trade == None:
