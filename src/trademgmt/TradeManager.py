@@ -90,6 +90,7 @@ class TradeManager:
   def registerStrategy(strategyInstance):
     TradeManager.strategyToInstanceMap[strategyInstance.getName()] = strategyInstance
 
+
   @staticmethod
   def loadAllTradesFromFile():
     tradesFilepath = os.path.join(TradeManager.intradayTradesDir, 'trades.json')
@@ -277,15 +278,37 @@ class TradeManager:
         TradeManager.checkAndUpdateMoveToCost(trade)
 
       elif trade.slOrder.orderStatus == OrderStatus.CANCELLED:
-        # SL order cancelled outside of algo (manually or by broker or by exchange)
-        logging.error('SL order %s for tradeID %s cancelled outside of Algo. Setting the trade as completed with exit price as current market price.', trade.slOrder.orderId, trade.tradeID)
         exit = TradeManager.symbolToCMPMap[trade.tradingSymbol]
-        TradeManager.setTradeToCompleted(trade, exit, TradeExitReason.SL_CANCELLED)
-        # Cancel target order if exists
-        TradeManager.cancelTargetOrder(trade)
-      
+        errorString="The order was cancelled by the exchange"
+        
+        if errorString in trade.slOrder.message:
+          message="SL order {0} for tradeID {1} cancelled by exchange.".format(trade.slOrder.orderId, trade.tradeID)
+          Utils.sendMessageTelegramBot(message)
+          logging.info(message)
+          TradeManager.placeEmergencyExitOrder(trade) # Placing market order to exit the trade
+          TradeManager.checkAndUpdateMoveToCost(trade) # If another leg is running move that to cost price
+        else:
+          logging.error('SL order %s for tradeID %s cancelled outside of Algo. Setting the trade as completed with exit price as current market price.', trade.slOrder.orderId, trade.tradeID)
+          TradeManager.setTradeToCompleted(trade, exit, TradeExitReason.SL_CANCELLED)
+          # Cancel target order if exists
+          TradeManager.cancelTargetOrder(trade)
       else:
         TradeManager.checkAndUpdateTrailSL(trade)
+  
+  @staticmethod
+  def placeEmergencyExitOrder(trade):
+    logging.info("TradeManager: Placing emergency exit order as SL order was cancelled by exchange")
+    oip = OrderInputParams(trade.tradingSymbol)
+    oip.direction = Direction.SHORT if trade.direction == Direction.LONG else Direction.LONG 
+    oip.productType = trade.productType
+    oip.orderType = OrderType.MARKET
+    oip.qty = trade.qty
+    if trade.isFutures == True or trade.isOptions == True:
+      oip.isFnO = True
+    try:
+      trade.emergencyExitOrder = TradeManager.getOrderManager().placeOrder(oip)
+    except Exception as e:
+      logging.error('TradeManager: Failed to place emergency exit order for tradeID %s: Error => %s', trade.tradeID, str(e))
 
   @staticmethod
   def checkAndUpdateTrailSL(trade):

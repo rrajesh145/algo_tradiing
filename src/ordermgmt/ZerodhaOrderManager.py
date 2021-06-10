@@ -124,6 +124,8 @@ class ZerodhaOrderManager(BaseOrderManager):
         foundOrder.price = bOrder['price']
         foundOrder.triggerPrice = bOrder['trigger_price']
         foundOrder.averagePrice = bOrder['average_price']
+        foundOrder.message = bOrder['status_message']
+        
         #logging.info('%s Updated order %s', self.broker, foundOrder)
         numOrdersUpdated += 1
 
