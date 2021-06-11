@@ -90,7 +90,6 @@ class TradeManager:
   def registerStrategy(strategyInstance):
     TradeManager.strategyToInstanceMap[strategyInstance.getName()] = strategyInstance
 
-
   @staticmethod
   def loadAllTradesFromFile():
     tradesFilepath = os.path.join(TradeManager.intradayTradesDir, 'trades.json')
@@ -281,7 +280,7 @@ class TradeManager:
         exit = TradeManager.symbolToCMPMap[trade.tradingSymbol]
         errorString="The order was cancelled by the exchange"
         
-        if errorString in trade.slOrder.message:
+        if trade.slOrder.message is not None and errorString in trade.slOrder.message:
           message="SL order {0} for tradeID {1} cancelled by exchange.".format(trade.slOrder.orderId, trade.tradeID)
           Utils.sendMessageTelegramBot(message)
           logging.info(message)
