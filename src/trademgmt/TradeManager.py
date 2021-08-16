@@ -559,6 +559,7 @@ class TradeManager:
     trade.entryOrder = TradeManager.convertJSONToOrder(jsonData['entryOrder'])
     trade.slOrder = TradeManager.convertJSONToOrder(jsonData['slOrder'])
     trade.targetOrder = TradeManager.convertJSONToOrder(jsonData['targetOrder'])
+    trade.moveToCost=jsonData['moveToCost']
     return trade
 
   @staticmethod
